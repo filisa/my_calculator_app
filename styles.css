@@ -1,0 +1,111 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+}
+
+body {
+	background-color: rgb(37, 37, 44);
+	display: flex;
+	justify-content: center;
+}
+
+@media (width<400px) {
+	.keys {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 1vw;
+		background-color: rgb(70, 85, 85);
+		width: 200px;
+		padding: 2vw;
+	}
+
+	button {
+		border-radius: 100px;
+		height: 30px;
+		width: 30px;
+		border-width: 1px;
+		font-size: 20px;
+		/* Indicate that buttons can be clicked. */
+		cursor: pointer;
+		/* Make hover and pressed changes animate smoothly. */
+		transition:
+			background 0.15s,
+			transform 0.1s;
+	}
+	button:hover {
+		background: #475569;
+	}
+	button:active {
+		transform: scale(0.95);
+	}
+
+	.screen {
+		padding: 3vw;
+		color: rgb(251, 249, 249);
+		min-height: 100px;
+		border: 1px solid black;
+		margin-bottom: 1vw;
+		background-color: rgb(35, 53, 67);
+	}
+
+	.orange_btn {
+		background-color: rgb(220, 123, 19);
+	}
+
+	/* because the AC button doesn't look nice and centered */
+	.smaller_font {
+		font-size: 15px;
+	}
+
+	.gray_btn {
+		background-color: rgb(164, 160, 157);
+	}
+}
+
+@media (width>400px) {
+	.keys {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 1vw;
+		background-color: rgb(70, 85, 85);
+		width: 60vw;
+		padding: 2vw;
+	}
+
+	button {
+		border-radius: 100px;
+		height: 10vw;
+		width: 10vw;
+		border-width: 1px;
+		font-size: 6vw;
+		/* Indicate that buttons can be clicked. */
+		cursor: pointer;
+		/* Make hover and pressed changes animate smoothly. */
+		transition:
+			background 0.15s,
+			transform 0.1s;
+	}
+	button:hover {
+		background: #475569;
+	}
+	button:active {
+		transform: scale(0.95);
+	}
+	.screen {
+		padding: 3vw;
+		color: rgb(251, 249, 249);
+		min-height: 100px;
+		border: 1px solid black;
+		margin-bottom: 1vw;
+		background-color: rgb(35, 53, 67);
+		font-size: 6vw;
+	}
+
+	.orange_btn {
+		background-color: rgb(220, 123, 19);
+	}
+
+	.gray_btn {
+		background-color: rgb(164, 160, 157);
+	}
+}
