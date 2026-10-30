@@ -12,7 +12,7 @@ let operator = null;
 let startNewNumber = false;
 
 function updateDisplay() {
-	display.textContent = `${previous ?? ""}${operator ?? ""}${current ?? ""}`;
+	display.textContent = current;
 }
 
 //when you enter the digit, we save it into the current variable, and then show it on the screen too.
@@ -32,6 +32,52 @@ function inputDigit(digit) {
 	}
 	updateDisplay();
 }
+
+function symbol(value) {
+	// JavaScript uses * and / for multiplication and division,
+	// but × and ÷ are easier for people to read on the display.
+	if (value === "*") return "×";
+	if (value === "/") return "÷";
+	if (value === "-") return "−";
+	if (value === "+") return "+";
+	return "NOT SUPPORTED";
+}
+
+keys.addEventListener("click", function (event) {
+	const button = event.target.closest("button");
+	//if you click outside the button do nothing
+	if (!button) {
+		return;
+	}
+	if (button.dataset.digit !== undefined) {
+		inputDigit(button.dataset.digit);
+	} else if (button.dataset.operator !== undefined) {
+		selectOperator(button.dataset.operator);
+	} else {
+		runAction(button.dataset.action);
+	}
+});
+
+function runAction(action) {
+	// HTML buttons use data-action values like "clear" or "equals".
+	// This function translates those strings into function calls.
+	if (action === "clear") clearAll();
+	if (action === "decimal") inputDecimal();
+	if (action === "equals") calculate();
+	if (action === "backspace") backspace();
+	if (action === "sign") changeTheSign();
+	if (action === "percent") percent();
+}
+
+function clearAll() {
+	current = "0";
+	previous = null;
+	operator = null;
+	startNewNumber = false;
+	history.textContent = "";
+	updateDisplay();
+}
+
 function inputDecimal() {
 	if (current === "Error") {
 		clearAll();
@@ -47,98 +93,95 @@ function inputDecimal() {
 	updateDisplay();
 }
 
-function clearAll() {
-	current = "0";
-	previous = null;
-	operator = null;
-	startNewNumber = false;
-	history.textContent = "";
-	updateDisplay();
-}
-//when you enter the operator, you save the current into the previous, save the operator too. And clear current digit?
-function inputOperator(inputtedOperator) {
-	if (operator === null && startNewNumber === false) {
-		operator = inputtedOperator;
-		previous = current;
-		current = "";
-		startNewNumber = true;
-		updateDisplay();
-	}
-}
-
 function calculate() {
+	//to calculate we need all the variables to have values
 	if (operator === null || previous === null || startNewNumber) return;
+
 	// let result = eval(`${previous}${operator}${current}`); not good to use eval
 	//  turn string into a number for actual arithmetic.
 	const second = Number(current);
-	let expression = `Number(${previous}) symbol(${operator}) Number(${current}) =`;
+	const expression = previous + " " + symbol(operator) + " " + current + " =";
 	// We declare result here so every operator can assign to it.
 	let result;
+	switch (operator) {
+		case "+":
+			result = previous + second;
+			break;
+		case "-":
+			result = previous - second;
+			break;
+		case "/":
+			result = previous / second;
+			break;
+		case "*":
+			result = previous * second;
+			break;
+		default:
+			console.log("Error: Unsupported operator");
+	}
 
-	if (operator === "+") {
-		result = previous + current;
+	// Division by zero produces Infinity (or NaN for 0 / 0).
+	// Number.isFinite() checks that the answer is a normal, finite number.
+	// toPrecision(12) also removes most visible floating-point artifacts,
+	// such as 0.30000000000000004 instead of 0.3.
+	// Convert back to a string because the display and digit input use text.
+	if (Number.isFinite(result)) {
+		current = String(Number(result.toPrecision(12)));
+	} else {
+		current = "Error";
 	}
-	if (operator === "-") {
-		result = previous - current;
-	}
-	if (operator === "/") {
-		result = previous / current;
-	}
-	if (operator === "*") {
-	}
-	current = result;
+	history.textContent = expression;
 	previous = null;
 	operator = null;
+	startNewNumber = true;
 	updateDisplay();
-	current = "0";
 }
 
-keys.addEventListener("click", function (event) {
-	const button = event.target.closest("button");
-	//if you click outside the button do nothing
-	if (!button) {
+function backspace() {
+	if (current === "Error") {
+		clearAll();
 		return;
 	}
-	if (button.dataset.digit !== undefined) {
-		inputDigit(button.dataset.digit);
+	// If we are waiting for the next number, there is nothing new to delete.
+	if (startNewNumber) return;
+	// slice(0, -1) returns the text without its last character.
+	// If deleting would leave nothing (or just '-'), show 0 instead.
+	if (current.length <= 1 || (current.length === 2 && current[0] === "-")) {
+		current = "0";
+	} else {
+		current = current.slice(0, -1);
 	}
-	if (button.dataset.operator !== undefined) {
-		inputOperator(button.dataset.operator);
-	}
-	if (button.dataset.action !== undefined) {
-		if (button.dataset.action === "equal") {
-			calculate();
-		} else if (button.dataset.action === "clear") {
-			clearAll();
-		}
-	}
-});
+	updateDisplay();
+}
 
-function symbol(value) {
-	// JavaScript uses * and / for multiplication and division,
-	// but × and ÷ are easier for people to read on the display.
-	if (value === "*") return "×";
-	if (value === "/") return "÷";
-	if (value === "-") return "−";
-	return "+";
+function changeTheSign() {
+	if (current === "Error") return;
+	if (current[0] === "-") {
+		current = current.slice(1);
+	} else {
+		current = "-" + current;
+	}
+	updateDisplay();
+}
+
+function percent() {
+	if (current === "Error") return;
+	// Basic calculator percentage: divide the displayed number by 100.
+	// Example: 25 becomes 0.25.
+	const result = Number(current) / 100;
+	current = String(Number(result.toPrecision(12)));
+	updateDisplay();
 }
 
 // HANDLE +, -, ×, ÷ BUTTONS
 function selectOperator(nextOperator) {
 	if (current === "Error") return;
-	// Allow calculations to be chained, such as 5 + 2 + 3.
-	// When the second + is pressed, calculate 5 + 2 first.
 	if (operator !== null && !startNewNumber) {
 		calculate();
 		if (current === "Error") return;
 	}
-	// Convert the displayed STRING into a NUMBER before doing arithmetic.
-	// We save it because the next digits will replace current.
 	previous = Number(current);
-	// Remember which calculation the user wants to perform.
 	operator = nextOperator;
-	// The NEXT digit should start the second number.
 	startNewNumber = true;
-	// Example history: "8 +".
 	history.textContent = current + " " + symbol(operator);
 }
