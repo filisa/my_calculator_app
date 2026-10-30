@@ -71,14 +71,22 @@ function calculate() {
 	// let result = eval(`${previous}${operator}${current}`); not good to use eval
 	//  turn string into a number for actual arithmetic.
 	const second = Number(current);
-	let expression = `${previous} ${operator} ${current} =`;
+	let expression = `Number(${previous}) symbol(${operator}) Number(${current}) =`;
 	// We declare result here so every operator can assign to it.
 	let result;
 
 	if (operator === "+") {
 		result = previous + current;
 	}
-	if (operator === "-") current = result;
+	if (operator === "-") {
+		result = previous - current;
+	}
+	if (operator === "/") {
+		result = previous / current;
+	}
+	if (operator === "*") {
+	}
+	current = result;
 	previous = null;
 	operator = null;
 	updateDisplay();
