@@ -6,10 +6,24 @@
 body {
 	background-color: rgb(37, 37, 44);
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
+	align-items: center;
 }
 
+footer {
+	margin-top: 3vw;
+	text-align: center;
+	color: rgb(136, 130, 130);
+	a {
+		color: rgb(190, 180, 180);
+	}
+}
 @media (width<400px) {
+	footer {
+		font-size: 0.5rem;
+	}
+
 	.keys {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
@@ -40,6 +54,7 @@ body {
 	}
 
 	.screen {
+		width: 200px;
 		padding: 3vw;
 		color: rgb(251, 249, 249);
 		min-height: 100px;
@@ -63,6 +78,10 @@ body {
 }
 
 @media (width>400px) {
+	footer {
+		font-size: 3rem;
+	}
+
 	.keys {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
@@ -94,6 +113,8 @@ body {
 		transform: scale(0.95);
 	}
 	.screen {
+		width: 50vw;
+		border-radius: 20px;
 		padding: 3vw;
 		color: rgb(251, 249, 249);
 		min-height: 100px;
